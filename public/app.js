@@ -6,7 +6,7 @@
 
 console.log('app.js loaded');
 
-const COBALT_API = '/api';
+const COBALT_API = 'https://cobalt-api-production-f5b2.up.railway.app';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
