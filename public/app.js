@@ -6,74 +6,7 @@
 
 console.log('app.js loaded');
 
-// Media processing function
-async function processMediaBlob(blob, mode, filename) {
-  try {
-    // Real video remuxing for proper timeline/seeking
-    console.log('Processing media:', mode, filename);
-    
-    // Convert blob to array buffer for processing
-    const arrayBuffer = await blob.arrayBuffer();
-    
-    // For proper remuxing, we need to:
-    // 1. Parse the video container
-    // 2. Extract video/audio streams
-    // 3. Remux with proper timestamps and keyframes
-    // 4. Add metadata for seeking
-    
-    // Since we can't do real video processing in browser without libraries,
-    // we'll at least ensure the blob has proper structure
-    let processedBlob = blob;
-    
-    if (mode === 'audio' && filename.endsWith('.mp4')) {
-      // Extract audio from video (would need FFmpeg.js or similar)
-      console.log('Extracting audio from video...');
-      processedBlob = await extractAudioFromVideo(arrayBuffer);
-    } else if (mode === 'mute') {
-      // Remove audio from video (would need FFmpeg.js or similar)
-      console.log('Creating muted video...');
-      processedBlob = await createMutedVideo(arrayBuffer);
-    } else {
-      // Remux video with proper timeline metadata
-      console.log('Remuxing video with proper timeline...');
-      processedBlob = await remuxVideoWithTimeline(arrayBuffer);
-    }
-    
-    return processedBlob;
-  } catch (error) {
-    console.error('Processing failed:', error);
-    return blob; // Return original if processing fails
-  }
-}
-
-// Audio extraction function (placeholder)
-async function extractAudioFromVideo(arrayBuffer) {
-  // In a real implementation, this would use FFmpeg.js or similar
-  // to extract audio track and convert to MP3
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  return new Blob([arrayBuffer], { type: 'audio/mp3' });
-}
-
-// Muted video function (placeholder)
-async function createMutedVideo(arrayBuffer) {
-  // In a real implementation, this would use FFmpeg.js or similar
-  // to remove audio track while keeping video
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  return new Blob([arrayBuffer], { type: 'video/mp4' });
-}
-
-// Video remuxing function (placeholder for now)
-async function remuxVideoWithTimeline(arrayBuffer) {
-  // In a real implementation, this would:
-  // 1. Parse MP4 container
-  // 2. Ensure proper keyframe intervals
-  // 3. Add accurate timestamps
-  // 4. Include seeking metadata
-  await new Promise(resolve => setTimeout(resolve, 800));
-  return new Blob([arrayBuffer], { type: 'video/mp4' });
-}
-
-const COBALT_API = 'https://cobalt-api-production-f5b2.up.railway.app';
+const COBALT_API = '/api';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -557,21 +490,16 @@ async function handleSave() {
       chunks.push(value);
       received += value.length;
 
-      // Update progress (simplified)
-      const progress = contentLength > 0 ? Math.round((received / contentLength) * 100) : 0;
-      updateProcessStep('step-download', 25 + (progress * 0.75), `downloading file… ${progress}%`);
+      if (contentLength > 0) {
+        const percent = 25 + (received / contentLength) * 70;
+        updateProcessStep('step-download', percent, `downloading… ${formatSize(received)} / ${formatSize(contentLength)}`);
+      }
     }
 
-    // Create blob and process
-    let blob = new Blob(chunks);
-    
-    // Step 3: Process file (add metadata, etc.)
-    updateProcessStep('step-process', 75, 'processing file…');
-    
-    // Process the blob based on mode
-    blob = await processMediaBlob(blob, mode, data.filename);
+    // Step 3: Save file
     updateProcessStep('step-done', 95, 'saving…');
 
+    const blob = new Blob(chunks);
     const ext = mode === 'audio' ? 'mp3' : 'mp4';
     const filename = data.filename || `download.${ext}`;
 
