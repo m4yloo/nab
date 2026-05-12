@@ -491,7 +491,7 @@ async function handleSave() {
       received += value.length;
 
       // Update progress (simplified)
-      const progress = Math.round((received / contentLength) * 100);
+      const progress = contentLength > 0 ? Math.round((received / contentLength) * 100) : 0;
       updateProcessStep('step-download', 25 + (progress * 0.75), `downloading file… ${progress}%`);
     }
 
