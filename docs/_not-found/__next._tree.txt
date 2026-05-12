@@ -1,0 +1,3 @@
+:HL["/nab/_next/static/chunks/13hzomm1abqj~.css","style"]
+:HL["https://rsms.me/inter/inter.css","style"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"/_not-found","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"dCIPiE0BhJTd1HF1bOPuf"}
