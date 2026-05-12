@@ -466,30 +466,37 @@ async function handleSave() {
       throw new Error('unexpected response');
     }
 
-    // Step 2: Mock download (skip actual fetch)
+    // Step 2: Download the file
     updateProcessStep('step-download', 25, 'downloading file…');
 
-    // Mock successful download without actual fetch
-    const fileResponse = { ok: true, headers: { get: () => '1000000' } };
+    const fileResponse = await fetch(data.url, {
+      signal: abortController.signal,
+    });
 
     if (!fileResponse.ok) {
       throw new Error(`download error: ${fileResponse.status}`);
     }
 
-    // Mock download progress
-    const contentLength = 1000000; // Mock 1MB file
+    // Stream download with progress
+    const contentLength = parseInt(fileResponse.headers.get('content-length') || '0');
+    const reader = fileResponse.body.getReader();
+    const chunks = [];
     let received = 0;
-    
-    // Simulate download progress
-    for (let i = 0; i <= 100; i += 10) {
-      received = (contentLength * i) / 100;
-      const progress = i;
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      chunks.push(value);
+      received += value.length;
+
+      // Update progress (simplified)
+      const progress = Math.round((received / contentLength) * 100);
       updateProcessStep('step-download', 25 + (progress * 0.75), `downloading file… ${progress}%`);
-      await new Promise(resolve => setTimeout(resolve, 100)); // Small delay for visual effect
     }
 
-    // Create mock blob and download
-    const blob = new Blob(['mock video content'], { type: 'video/mp4' });
+    // Create blob and download
+    const blob = new Blob(chunks);
     const downloadUrl = URL.createObjectURL(blob);
 
     // Step 3: Save file
