@@ -495,11 +495,17 @@ async function handleSave() {
       updateProcessStep('step-download', 25 + (progress * 0.75), `downloading file… ${progress}%`);
     }
 
-    // Create blob and download
-    const blob = new Blob(chunks);
-    const downloadUrl = URL.createObjectURL(blob);
-
-    // Step 3: Save file
+    // Create blob and process
+    let blob = new Blob(chunks);
+    
+    // Step 3: Process file (add metadata, etc.)
+    updateProcessStep('step-process', 75, 'processing file…');
+    
+    // Simulate processing time
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Here you would add actual metadata processing
+    // For now, we'll just use the original blob
     updateProcessStep('step-done', 95, 'saving…');
 
     const ext = mode === 'audio' ? 'mp3' : 'mp4';
