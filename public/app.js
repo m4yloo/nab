@@ -442,29 +442,21 @@ async function handleSave() {
     // Step 1: Fetch from Cobalt
     updateProcessStep('step-fetch', 10, 'getting download link…');
 
-    // Mock response to bypass API issues for now
-    const data = {
-      status: 'redirect',
-      url: 'https://example.com/mock-download.mp4',
-      filename: 'video.mp4'
-    };
+    const response = await fetch(COBALT_API + '/', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+      signal: abortController.signal,
+    });
 
-    // Skip the API call for now
-    // const response = await fetch(COBALT_API + '/', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Accept': 'application/json',
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify(payload),
-    //   signal: abortController.signal,
-    // });
+    if (!response.ok) {
+      throw new Error(`server error: ${response.status}`);
+    }
 
-    // if (!response.ok) {
-    //   throw new Error(`server error: ${response.status}`);
-    // }
-
-    // const data = await response.json();
+    const data = await response.json();
 
     if (data.status === 'error') {
       throw new Error(data.error?.msg || 'download failed');
@@ -739,14 +731,8 @@ async function loadServices() {
   servicesError.hidden = true;
 
   try {
-    // Mock config response
-    const data = {
-      services: [
-        { id: 'youtube', name: 'YouTube', enabled: true },
-        { id: 'twitter', name: 'Twitter', enabled: true },
-        { id: 'tiktok', name: 'TikTok', enabled: true },
-      ]
-    };
+    const response = await fetch('/api/config');
+    const data = await response.json();
 
     if (data.services && Array.isArray(data.services)) {
       renderServices(data.services);
