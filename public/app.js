@@ -744,8 +744,14 @@ async function loadServices() {
   servicesError.hidden = true;
 
   try {
-    const response = await fetch('/api/config');
-    const data = await response.json();
+    // Mock config response
+    const data = {
+      services: [
+        { id: 'youtube', name: 'YouTube', enabled: true },
+        { id: 'twitter', name: 'Twitter', enabled: true },
+        { id: 'tiktok', name: 'TikTok', enabled: true },
+      ]
+    };
 
     if (data.services && Array.isArray(data.services)) {
       renderServices(data.services);
