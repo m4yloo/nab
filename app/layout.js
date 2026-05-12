@@ -25,7 +25,7 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         {children}
-        <script src="/app-local.js" async></script>
+        <script src="/app.js" async></script>
       </body>
     </html>
   );
