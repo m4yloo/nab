@@ -6,6 +6,40 @@
 
 console.log('app.js loaded');
 
+// Media processing function
+async function processMediaBlob(blob, mode, filename) {
+  try {
+    // For now, return the blob as-is (basic processing)
+    // In a real implementation, you would:
+    // 1. Extract metadata
+    // 2. Remux if needed (audio-only from video)
+    // 3. Add custom metadata
+    // 4. Optimize the file
+    
+    // Basic processing simulation
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    // If audio mode and we have a video, we'd extract audio here
+    if (mode === 'audio' && filename.endsWith('.mp4')) {
+      // This would extract audio from video
+      // For now, just return the original blob
+      return blob;
+    }
+    
+    // If mute mode, we'd remove audio here
+    if (mode === 'mute') {
+      // This would create a muted version
+      return blob;
+    }
+    
+    // Return processed blob
+    return blob;
+  } catch (error) {
+    console.error('Processing failed:', error);
+    return blob; // Return original if processing fails
+  }
+}
+
 const COBALT_API = 'https://cobalt-api-production-f5b2.up.railway.app';
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -501,11 +535,8 @@ async function handleSave() {
     // Step 3: Process file (add metadata, etc.)
     updateProcessStep('step-process', 75, 'processing file…');
     
-    // Simulate processing time
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Here you would add actual metadata processing
-    // For now, we'll just use the original blob
+    // Process the blob based on mode
+    blob = await processMediaBlob(blob, mode, data.filename);
     updateProcessStep('step-done', 95, 'saving…');
 
     const ext = mode === 'audio' ? 'mp3' : 'mp4';
